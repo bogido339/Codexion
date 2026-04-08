@@ -96,7 +96,8 @@ void    *coder_routine(void *arg);
 //utils
 long long get_time_ms(void);
 void print_status(t_coder *coder, char *msg);
-void smart_sleep(t_config *config);
+void smart_sleep(long time, t_config *config);
+int simulation_stopped(t_config *config);
 
 //coder actions
 void compile(t_coder *coder);

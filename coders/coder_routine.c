@@ -41,28 +41,33 @@ void take_dongles(t_coder *coder)
             break;
         
     }
-    pthread_mutex_lock(&coder->config->dongles->mutex);
+    pthread_mutex_lock(&coder->right_dongle->mutex);
     print_status(coder, "has taken a dongle");
-    print_status(coder, "has taken a dongle");
-    
-    coder->left_dongle->is_available = 0;
     coder->right_dongle->is_available = 0;
-
     coder->last_compile_time = get_time_ms();
+    pthread_mutex_unlock(&coder->right_dongle->mutex);
 
-    pthread_mutex_unlock(&coder->config->dongles->mutex);
+    pthread_mutex_lock(&coder->left_dongle->mutex);
+    print_status(coder, "has taken a dongle");
+    coder->left_dongle->is_available = 0;
+    coder->last_compile_time = get_time_ms();
+    pthread_mutex_unlock(&coder->left_dongle->mutex);
+
 }
 
 
-void release_dongles(t_coder *coder, pthread_cond_t *cond, pthread_mutex_t *mutex)
+void release_dongles(t_coder *coder)
 {
-    pthread_mutex_lock(mutex);
-    coder->left_dongle->is_available = 1;
+    pthread_mutex_lock(&coder->right_dongle->mutex);
     coder->right_dongle->is_available = 1;
-    coder->left_dongle->last_released = get_time_ms();
     coder->right_dongle->last_released = get_time_ms();
-    pthread_cond_broadcast(cond);
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(&coder->right_dongle->mutex);
+
+    pthread_mutex_lock(&coder->left_dongle->mutex);
+    coder->left_dongle->is_available = 1;
+    coder->left_dongle->last_released = get_time_ms();
+    pthread_mutex_unlock(&coder->left_dongle->mutex);
+
 }
 
 void *coder_routine(void *arg)
@@ -72,8 +77,13 @@ void *coder_routine(void *arg)
     
     while (1)
     {
+        if (coder->compile_count >= coder->config->number_of_compiles_required)
+            break;
+        if (simulation_stopped(coder->config))
+            break;
+        
         take_dongles(coder);
-        comple(coder);
+        compile(coder);
         release_dongles(coder);
         debug(coder);
         refactor(coder);   

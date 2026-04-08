@@ -30,10 +30,28 @@ void print_status(t_coder *coder, char *msg)
     printf("%d %d %s\n", time_use, coder_id, msg);
 }
 
-void smart_sleep(t_config *config)
+int simulation_stopped(t_config *config)
 {
-    while ("hear is plase the logic")
+    int result;
+    pthread_mutex_lock(&config->burned_out_mutex);
+    if (config->burned_out)
+        result = 1;
+    else
+        result = 0;
+    pthread_mutex_unlock(&config->burned_out_mutex);
+    return result;
+
+}
+
+void smart_sleep(long time, t_config *config)
+{
+    long start_time = get_time_ms();
+    while (get_time_ms() - start_time < time)
     {
+        if (simulation_stopped(config))
+            break;
         usleep(500);
     }
 }
+
+

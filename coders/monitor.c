@@ -24,13 +24,14 @@ int check_coder(t_config *config)
         {
             pthread_mutex_lock(&config->burned_out_mutex);
             config->burned_out = 1;
-            pthread_mutex_unlock(&config->print_mutex);
+            pthread_mutex_unlock(&config->burned_out_mutex);
             
-            pthread_mutex_lock(&config->burned_out_mutex);
-            print_status(config->coders[i], "burned out");
+            pthread_mutex_lock(&config->print_mutex);
+            print_status(&config->coders[i], "burned out");
             pthread_mutex_unlock(&config->print_mutex);
             return 1;
-        }   
+        }
+        i++;
     }
     return 0;
 }
@@ -39,14 +40,14 @@ void *monitor_routine(void *arg)
     t_config *config;
 
     config = (t_config *)arg;
-    while (!check_coders(config))
+    while (!check_coder(config))
         usleep(500);
     return NULL;
 }
 
 int start_monitor(t_config *config)
 {
-    create_thread(&config->monitor, NULL, monitor_routine, config);
+    pthread_create(&config->monitor, NULL, monitor_routine, config);
     pthread_join(config->monitor, NULL);
 
     return (0);

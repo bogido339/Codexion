@@ -14,15 +14,19 @@
 
 void compile(t_coder *coder)
 {
-    
+    print_status(coder, "is compiling");
+    smart_sleep(coder->config->time_to_compile, coder->config);
+    coder->compile_count += 1;
 }
 
 void debug(t_coder *coder)
 {
-    
+    print_status(coder, "is debugging");
+    smart_sleep(coder->config->time_to_debug, coder->config);
 }
 
 void refactor(t_coder *coder)
 {
-    
+    print_status(coder, "is refactoring");
+    smart_sleep(coder->config->time_to_refactor, coder->config);
 }
