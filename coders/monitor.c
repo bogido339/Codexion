@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 07:49:01 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/08 14:37:06 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/09 10:15:05 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,22 @@ int check_coder(t_config *config)
     
     while (i < num_coder)
     {
-        if (get_time_ms() - config->coders[i].last_compile_time > config->time_to_burnout)
+        if (config->coders[i].compile_count < config->number_of_compiles_required)
         {
-            pthread_mutex_lock(&config->burned_out_mutex);
-            config->burned_out = 1;
-            pthread_mutex_unlock(&config->burned_out_mutex);
-            
-            pthread_mutex_lock(&config->print_mutex);
-            print_status(&config->coders[i], "burned out");
-            pthread_mutex_unlock(&config->print_mutex);
+            if (get_time_ms() - config->coders[i].last_compile_time > config->time_to_burnout)
+            {
+                pthread_mutex_lock(&config->burned_out_mutex);
+                config->burned_out = 1;
+                pthread_mutex_unlock(&config->burned_out_mutex);
+                
+                pthread_mutex_lock(&config->print_mutex);
+                print_status(&config->coders[i], "burned out");
+                pthread_mutex_unlock(&config->print_mutex);
+                return 1;
+            }
+        }     
+        else
             return 1;
-        }
         i++;
     }
     return 0;

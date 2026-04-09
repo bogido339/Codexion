@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 16:51:50 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/08 14:49:44 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/09 10:15:38 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void take_dongles(t_coder *coder)
 
         if (left_dg && right_df)
             break;
+
         
     }
     pthread_mutex_lock(&coder->right_dongle->mutex);
@@ -70,6 +71,13 @@ void release_dongles(t_coder *coder)
 
 }
 
+void *handle_single_coder(t_coder *coder)
+{
+    print_status(coder, "has taken a dongle");
+    usleep(coder->config->time_to_compile * 1000);    
+    return NULL;
+}
+
 void *coder_routine(void *arg)
 {
     
@@ -77,6 +85,8 @@ void *coder_routine(void *arg)
     
     while (1)
     {
+        if (coder->config->number_of_coders == 1)
+            return (handle_single_coder(coder));
         if (coder->compile_count >= coder->config->number_of_compiles_required)
             break;
         if (simulation_stopped(coder->config))
@@ -86,7 +96,7 @@ void *coder_routine(void *arg)
         compile(coder);
         release_dongles(coder);
         debug(coder);
-        refactor(coder);   
+        refactor(coder);
     }
     
     return (NULL);

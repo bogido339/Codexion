@@ -1,30 +1,58 @@
-#include <pthread.h>
+// #include <stdio.h>
+// #include <pthread.h>
+
+// int counter = 0;
+
+// void* increment(void* arg) {
+//     for (int i = 0; i < 100000; i++) {
+//         counter++;  // ❌ خطأ محتمل (data race)
+//     }
+//     return NULL;
+// }
+
+// int main() {
+//     pthread_t t1, t2;
+
+//     pthread_create(&t1, NULL, increment, NULL);
+//     pthread_create(&t2, NULL, increment, NULL);
+
+//     pthread_join(t1, NULL);
+//     pthread_join(t2, NULL);
+
+//     printf("Counter = %d\n", counter);
+//     return 0;
+// }
+
+
+
 #include <stdio.h>
+#include <pthread.h>
 
-int counter = 0; // Shared resource
+int counter = 0;
+pthread_mutex_t lock;
 
-void* increment_counter(void* arg) {
-    for (int i = 0; i < 1000000; i++) {
-        // DATA RACE HERE:
-        // Multiple threads reading and writing 'counter' at the same time
-        counter++; 
+void* increment(void* arg) {
+    for (int i = 0; i < 100000; i++) {
+        pthread_mutex_lock(&lock);
+        counter++;
+        pthread_mutex_unlock(&lock);
     }
     return NULL;
 }
 
 int main() {
-    pthread_t thread1, thread2;
+    pthread_t t1, t2;
 
-    // Create two threads performing the same task
-    pthread_create(&thread1, NULL, increment_counter, NULL);
-    pthread_create(&thread2, NULL, increment_counter, NULL);
+    pthread_mutex_init(&lock, NULL);
 
-    // Wait for both threads to finish
-    pthread_join(thread1, NULL);
-    pthread_join(thread2, NULL);
+    pthread_create(&t1, NULL, increment, NULL);
+    pthread_create(&t2, NULL, increment, NULL);
 
-    printf("Final counter value: %d\n", counter);
-    printf("Expected value: 2000000\n");
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
 
+    printf("Counter = %d\n", counter);
+
+    pthread_mutex_destroy(&lock);
     return 0;
 }

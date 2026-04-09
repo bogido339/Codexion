@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 17:05:10 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/08 12:19:33 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/09 09:49:15 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ t_coder *init_coders(t_config *config)
 
     while (i < num_coders)
     {
-        coders[i].id = i;
+        coders[i].id = i + 1;
         coders[i].last_compile_time = 0;
         coders[i].compile_count = 0;
         coders[i].left_dongle = &config->dongles[i];

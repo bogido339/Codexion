@@ -34,8 +34,8 @@
 NAME = codexion
 CC = gcc
 
-CFLAGS = -g -Wall -Wextra -Werror -pthread -fPIE
-LDFLAGS = -pthread -pie
+CFLAGS = -g -Wall -Wextra -Werror -pthread -fsanitize=thread
+
 
 SRC = coders/codexion.c \
 		coders/parse_agrs.c \
@@ -53,7 +53,7 @@ OBJ = $(SRC:%.c=%.o)
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(OBJ) -o $(NAME) $(LDFLAGS)
+	$(CC) $(OBJ) -o $(NAME)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
