@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/28 14:58:58 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/08 14:43:24 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/10 18:06:18 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 typedef struct s_coder t_coder;
 typedef struct s_dongle t_dongle;
 typedef struct s_config t_config;
+typedef struct s_request t_request;
 
 
 typedef struct s_config
@@ -61,6 +62,7 @@ typedef struct s_dongle
     pthread_mutex_t mutex;
     int is_available;
     long long last_released;
+    t_request *request;
 
 } t_dongle;
 
@@ -79,6 +81,13 @@ typedef struct s_coder
     t_config *config;
 
 } t_coder;
+
+typedef struct s_request
+{
+    long preoryty;
+    int id;
+
+} t_request;
 
 //parsing
 int parse_args(int argc, char **argv);
@@ -103,6 +112,11 @@ int simulation_stopped(t_config *config);
 void compile(t_coder *coder);
 void debug(t_coder *coder);
 void refactor(t_coder *coder);
+
+//heep
+void add_coder_in_last_the_heep(t_coder *coder);
+int is_first_coder_in_heep(t_coder *coder);
+void pop_in_start_the_heep(t_coder *coder);
 
 
 #endif

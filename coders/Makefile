@@ -37,16 +37,17 @@ CC = gcc
 CFLAGS = -g -Wall -Wextra -Werror -pthread -fsanitize=thread
 
 
-SRC = coders/codexion.c \
-		coders/parse_agrs.c \
-		coders/file_config.c \
-		coders/start_threads.c \
-		coders/init_dongles.c \
-		coders/init_coders.c \
-		coders/coder_routine.c \
-		coders/utils.c \
-		coders/coder_actions.c \
-		coders/monitor.c
+SRC = codexion.c \
+		parse_agrs.c \
+		file_config.c \
+		start_threads.c \
+		init_dongles.c \
+		init_coders.c \
+		coder_routine.c \
+		utils.c \
+		coder_actions.c \
+		monitor.c \
+		heep.c 
 
 OBJ = $(SRC:%.c=%.o)
 

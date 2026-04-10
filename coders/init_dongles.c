@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 14:50:25 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/08 11:52:19 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/10 17:58:33 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ t_dongle    *init_dongles(t_config *config)
     {
         pthread_mutex_init(&dongles[i].mutex, NULL);
         dongles[i].is_available = 1;
-        dongles[i].last_released = 0;  
+        dongles[i].last_released = 0;
+        dongles[i].request = malloc(sizeof(t_request));
         i++;
     }
     config->dongles = dongles;
