@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/28 14:58:58 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/10 18:06:18 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/12 10:04:50 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ typedef struct s_config
 
     pthread_cond_t dongles_cond;
 
+    pthread_mutex_t add_in_heap;
+
     pthread_t monitor;
 
     t_coder *coders;
@@ -62,7 +64,7 @@ typedef struct s_dongle
     pthread_mutex_t mutex;
     int is_available;
     long long last_released;
-    t_request *request;
+    t_coder **heap;
 
 } t_dongle;
 
@@ -82,12 +84,6 @@ typedef struct s_coder
 
 } t_coder;
 
-typedef struct s_request
-{
-    long preoryty;
-    int id;
-
-} t_request;
 
 //parsing
 int parse_args(int argc, char **argv);

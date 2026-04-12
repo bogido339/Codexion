@@ -6,23 +6,24 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 16:51:50 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/10 17:50:59 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/12 11:16:51 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-
-void take_dongles(t_coder *coder)
+int take_dongles(t_coder *coder)
 {
     long long current_time;
     int left_dg;
     int right_df;
-    mutex;
+    pthread_mutex_lock(&coder->config->add_in_heap);
     add_coder_in_last_the_heep(coder);
-    unmutex;
+    pthread_mutex_unlock(&coder->config->add_in_heap);
     while (1)
     {
+        if (simulation_stopped(coder->config))
+            return (1);
         current_time = get_time_ms();
         if (coder->left_dongle->is_available &&
             (current_time - coder->left_dongle->last_released >= coder->config->dongle_cooldown)) {
@@ -46,6 +47,9 @@ void take_dongles(t_coder *coder)
         }
             
     }
+    return 0;
+    // pthread_mutex_lock(&coder->config->print_mutex);
+    
     pthread_mutex_lock(&coder->right_dongle->mutex);
     print_status(coder, "has taken a dongle");
     coder->right_dongle->is_available = 0;
@@ -57,6 +61,8 @@ void take_dongles(t_coder *coder)
     coder->left_dongle->is_available = 0;
     coder->last_compile_time = get_time_ms();
     pthread_mutex_unlock(&coder->left_dongle->mutex);
+
+    // pthread_mutex_unlock(&coder->config->print_mutex);
 
 }
 
@@ -96,7 +102,8 @@ void *coder_routine(void *arg)
         if (simulation_stopped(coder->config))
             break;
         
-        take_dongles(coder);
+        if (take_dongles(coder))
+            return NULL;
         compile(coder);
         release_dongles(coder);
         debug(coder);

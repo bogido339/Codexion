@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 17:08:59 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/08 12:27:50 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/12 10:38:18 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,13 @@ void start_threads(t_config *config)
         pthread_create(&config->coders[i].coder_thread, NULL, coder_routine, &config->coders[i]);
         i++;
     }
-    
+    start_monitor(config);
     i = 0;
     while (i < n)
     {
         pthread_join(config->coders[i].coder_thread, NULL);
         i++;
     }
+    pthread_join(config->monitor, NULL);
+    
 }

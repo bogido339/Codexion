@@ -34,10 +34,10 @@
 NAME = codexion
 CC = gcc
 
-CFLAGS = -g -Wall -Wextra -Werror -pthread -fsanitize=thread
+CFLAGS = -g -Wall -Wextra -Werror 
+# -pthread -fsanitize=thread
 
-
-SRC = codexion.c \
+SRC = main.c \
 		parse_agrs.c \
 		file_config.c \
 		start_threads.c \
@@ -47,7 +47,7 @@ SRC = codexion.c \
 		utils.c \
 		coder_actions.c \
 		monitor.c \
-		heep.c 
+		heap.c 
 
 OBJ = $(SRC:%.c=%.o)
 
@@ -65,6 +65,6 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
-re: fclean all
+re: fclean alld
 
 .PHONY: clean fclean re all

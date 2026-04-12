@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 07:49:01 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/09 10:15:05 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/12 13:19:08 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,33 +27,33 @@ int check_coder(t_config *config)
                 pthread_mutex_lock(&config->burned_out_mutex);
                 config->burned_out = 1;
                 pthread_mutex_unlock(&config->burned_out_mutex);
-                
+                usleep(1000);
                 pthread_mutex_lock(&config->print_mutex);
-                print_status(&config->coders[i], "burned out");
+                printf("%lld %d %s\n", get_time_ms() - config->start_time, config->coders[i].id, "burned out");
                 pthread_mutex_unlock(&config->print_mutex);
-                return 1;
+                return 0;
             }
         }     
         else
             return 1;
         i++;
     }
-    return 0;
+    return 1;
 }
 void *monitor_routine(void *arg)
 {
     t_config *config;
 
     config = (t_config *)arg;
-    while (!check_coder(config))
+    while (check_coder(config))
         usleep(500);
+
+        
     return NULL;
 }
 
 int start_monitor(t_config *config)
 {
     pthread_create(&config->monitor, NULL, monitor_routine, config);
-    pthread_join(config->monitor, NULL);
-
     return (0);
 }

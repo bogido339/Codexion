@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/29 13:20:57 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/08 12:11:59 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/12 10:06:12 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ t_config *fill_config(char **argv)
     pthread_mutex_init(&config->print_mutex, NULL);
     pthread_cond_init(&config->dongles_cond, NULL);
     pthread_mutex_init(&config->burned_out_mutex, NULL);
+    pthread_mutex_init(&config->add_in_heap, NULL);
 
     config->start_time = get_time_ms();
     config->burned_out = 0;
