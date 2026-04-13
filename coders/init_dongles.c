@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 14:50:25 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/12 09:46:16 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/13 14:52:18 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,9 @@ t_dongle    *init_dongles(t_config *config)
 
     while (i < num_dongles)
     {
-        pthread_mutex_init(&dongles[i].mutex, NULL);
+        pthread_mutex_init(&dongles[i].available_mutex, NULL);
+        pthread_mutex_init(&dongles[i].released_mutex, NULL);
+        
         dongles[i].is_available = 1;
         dongles[i].last_released = 0;
 

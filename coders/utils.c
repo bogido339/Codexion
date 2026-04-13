@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 13:24:13 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/12 13:18:14 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/13 16:48:30 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,44 +15,55 @@
 long long get_time_ms(void)
 {
     struct timeval time;
+
     gettimeofday(&time, NULL);
     return ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 }
 
-void print_status(t_coder *coder, char *msg)
+void print_status(t_coder *coder, char *msg, int count)
 {
     int time_use;
     int coder_id;
+    int i;
 
-    if (coder->config->burned_out)
+    if (simulation_stopped(coder))
         return;
+
     pthread_mutex_lock(&coder->config->print_mutex);
     time_use = get_time_ms() - coder->config->start_time;
     coder_id = coder->id;
     
-    printf("%d %d %s\n", time_use, coder_id, msg);
+    i = 0;
+    while (i < count)
+    {
+        printf("%d %d %s\n", time_use, coder_id, msg);
+        i++;
+    }
     pthread_mutex_unlock(&coder->config->print_mutex);
 }
 
-int simulation_stopped(t_config *config)
+int simulation_stopped(t_coder *coder)
 {
     int result;
-    pthread_mutex_lock(&config->burned_out_mutex);
-    if (config->burned_out)
+
+    pthread_mutex_lock(&coder->config->stop_mutex);
+    if (coder->config->stop)
         result = 1;
     else
         result = 0;
-    pthread_mutex_unlock(&config->burned_out_mutex);
-    return result;
+    pthread_mutex_unlock(&coder->config->stop_mutex);
 
+    return result;
 }
 
-void smart_sleep(long time, t_config *config)
+void smart_sleep(long time, t_coder *coder)
 {
-    long start_time = get_time_ms();
+    long start_time;;
+
+    start_time = get_time_ms();
     while (get_time_ms() - start_time < time)
     {
-        if (simulation_stopped(config))
+        if (simulation_stopped(coder))
             break;
         usleep(500);
     }

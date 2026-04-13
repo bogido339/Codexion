@@ -6,40 +6,56 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 07:49:01 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/12 13:19:08 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/13 16:04:15 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-
 int check_coder(t_config *config)
 {
     int i = 0;
     int num_coder = config->number_of_coders;
+    int compile_count;
+    long long last_time;
+    int finished_coders = 0;
     
     while (i < num_coder)
     {
-        if (config->coders[i].compile_count < config->number_of_compiles_required)
+        pthread_mutex_lock(&config->monitor_mutex);
+        compile_count = config->coders[i].compile_count;
+        last_time = config->coders[i].last_compile_time;
+        pthread_mutex_unlock(&config->monitor_mutex);
+
+        if (compile_count < config->number_of_compiles_required)
         {
-            if (get_time_ms() - config->coders[i].last_compile_time > config->time_to_burnout)
+            if (get_time_ms() - last_time > config->time_to_burnout)
             {
-                pthread_mutex_lock(&config->burned_out_mutex);
-                config->burned_out = 1;
-                pthread_mutex_unlock(&config->burned_out_mutex);
-                usleep(1000);
-                pthread_mutex_lock(&config->print_mutex);
-                printf("%lld %d %s\n", get_time_ms() - config->start_time, config->coders[i].id, "burned out");
-                pthread_mutex_unlock(&config->print_mutex);
+                pthread_mutex_lock(&config->stop_mutex);
+                config->stop = 1;
+                pthread_mutex_unlock(&config->stop_mutex);
+
+                print_status(&config->coders[i], "burned out", 1);
+                
                 return 0;
             }
-        }     
+        }
         else
-            return 1;
+            finished_coders++;
         i++;
     }
+    
+    if (finished_coders == num_coder)
+    {
+        pthread_mutex_lock(&config->stop_mutex);
+        config->stop = 1;
+        pthread_mutex_unlock(&config->stop_mutex);
+        return 0;
+    }
+    
     return 1;
 }
+
 void *monitor_routine(void *arg)
 {
     t_config *config;
@@ -48,7 +64,6 @@ void *monitor_routine(void *arg)
     while (check_coder(config))
         usleep(500);
 
-        
     return NULL;
 }
 

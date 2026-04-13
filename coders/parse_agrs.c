@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/28 14:56:51 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/01 14:21:17 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/13 16:22:39 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ int parse_args(int argc, char **argv)
         return (fprintf(stderr, "validate number function"), 0);
     if (!validate_scheduler(argv[8]))
         return (fprintf(stderr, "validae scheduler function"), 0);
+    if (argv[1] <= 0)
+        return (fprintf(stderr, "number of coder can not nihativ"), 0);
     return (1);
 }
 

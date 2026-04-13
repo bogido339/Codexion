@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/27 09:31:50 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/12 10:38:34 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/13 16:21:56 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,12 @@ int main(int argc, char **argv)
     t_coder *coders;
 
     if (!parse_args(argc, argv))
+    {
+        printf("hello");
         return (1);
+    }
+        
+    
 
     config = fill_config(argv);
 
@@ -31,7 +36,6 @@ int main(int argc, char **argv)
     if (!coders)
         return (1);
     start_threads(config);
-    // start_monitor(config);
 
     return (0);
 }

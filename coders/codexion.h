@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/28 14:58:58 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/12 10:04:50 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/13 15:58:05 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,12 @@ typedef struct s_config
     char *scheduler;
     long long start_time;
 
-    int burned_out;
+    int stop;
 
-    pthread_mutex_t burned_out_mutex;
+    pthread_mutex_t stop_mutex;
+    pthread_mutex_t monitor_mutex;
     pthread_mutex_t print_mutex;
+    pthread_mutex_t dongle_mutex;
 
     pthread_cond_t dongles_cond;
 
@@ -61,7 +63,9 @@ typedef struct s_config
 
 typedef struct s_dongle
 {
-    pthread_mutex_t mutex;
+    pthread_mutex_t available_mutex;
+    pthread_mutex_t released_mutex;
+    
     int is_available;
     long long last_released;
     t_coder **heap;
@@ -100,9 +104,9 @@ void    *coder_routine(void *arg);
 
 //utils
 long long get_time_ms(void);
-void print_status(t_coder *coder, char *msg);
-void smart_sleep(long time, t_config *config);
-int simulation_stopped(t_config *config);
+void print_status(t_coder *coder, char *msg, int count);
+void smart_sleep(long time, t_coder *coder);
+int simulation_stopped(t_coder *coder);
 
 //coder actions
 void compile(t_coder *coder);
