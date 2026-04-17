@@ -6,7 +6,7 @@
 /*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 16:51:50 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/13 17:02:01 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/17 06:26:41 by mbougajd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,6 @@ void *coder_routine(void *arg)
     coder = (t_coder *)arg;
     while (1)
     {
-        printf("error");
         if (coder->config->number_of_coders == 1)
             return (handle_single_coder(coder));
 
