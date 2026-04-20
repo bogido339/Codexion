@@ -1,36 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   simulation_state.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/27 09:31:50 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/19 18:47:20 by mohamed          ###   ########.fr       */
+/*   Created: 2026/04/08 13:24:13 by mbougajd          #+#    #+#             */
+/*   Updated: 2026/04/19 18:56:28 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-int main(int argc, char **argv)
+int simulation_stopped(t_config *config)
 {
-    t_config *config;
-    t_dongle *dongles;
-    t_coder *coders;
+    int stop;
 
-    if (!parse_args(argc, argv))
-        return (1);
+    pthread_mutex_lock(&config->stop_simulation_mutex);
+    stop = config->stop_simulation;
+    pthread_mutex_unlock(&config->stop_simulation_mutex);
+    return stop;
+}
 
-    config = init_config(argv);
-
-    dongles = init_dongles(config);
-    if (!dongles)
-        return (1);
-
-    coders = init_coders(config);
-    if (!coders)
-        return (1);
-    start_threads(config);
-
-    return (0);
+void stop_simulation(t_config *config)
+{
+    pthread_mutex_lock(&config->stop_simulation_mutex);
+    config->stop_simulation = 1;
+    pthread_mutex_unlock(&config->stop_simulation_mutex);
 }

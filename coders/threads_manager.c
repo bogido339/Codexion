@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   start_threads.c                                    :+:      :+:    :+:   */
+/*   threads_manager.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 17:08:59 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/12 10:38:18 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/19 18:54:27 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,16 +21,18 @@ void start_threads(t_config *config)
     i = 0;
     while(i < n)
     {
-        pthread_create(&config->coders[i].coder_thread, NULL, coder_routine, &config->coders[i]);
+        pthread_create(&config->coders[i].coder_thread_id, NULL, coder_routine, &config->coders[i]);
         i++;
     }
-    start_monitor(config);
+
+    pthread_create(&config->monitor_id, NULL, monitor_routine, config);
+
     i = 0;
     while (i < n)
     {
-        pthread_join(config->coders[i].coder_thread, NULL);
+        pthread_join(config->coders[i].coder_thread_id, NULL);
         i++;
     }
-    pthread_join(config->monitor, NULL);
+    pthread_join(config->monitor_id, NULL);
     
 }

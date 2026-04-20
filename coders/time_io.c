@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   time_io.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 13:24:13 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/17 06:26:04 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/20 08:00:58 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void print_status(t_coder *coder, char *msg, int count)
     int coder_id;
     int i;
 
-    if (simulation_stopped(coder))
+    if (simulation_stopped(coder->config))
         return;
 
     pthread_mutex_lock(&coder->config->print_mutex);
@@ -42,28 +42,14 @@ void print_status(t_coder *coder, char *msg, int count)
     pthread_mutex_unlock(&coder->config->print_mutex);
 }
 
-int simulation_stopped(t_coder *coder)
-{
-    int result;
-
-    pthread_mutex_lock(&coder->config->stop_mutex);
-    if (coder->config->stop)
-        result = 1;
-    else
-        result = 0;
-    pthread_mutex_unlock(&coder->config->stop_mutex);
-
-    return result;
-}
-
 void smart_sleep(long time, t_coder *coder)
 {
-    long start_time;;
+    long long start_time;;
 
     start_time = get_time_ms();
     while (get_time_ms() - start_time < time)
     {
-        if (simulation_stopped(coder))
+        if (simulation_stopped(coder->config))
             break;
         usleep(500);
     }

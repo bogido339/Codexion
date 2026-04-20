@@ -1,20 +1,22 @@
 NAME = codexion
 CC = cc
 
-CFLAGS = -g -Wall -Wextra -Werror 
+CFLAGS = -g -Wall -Wextra -Werror -lpthread
 # -pthread -fsanitize=thread
 
 SRC = main.c \
-		parse_agrs.c \
-		file_config.c \
-		start_threads.c \
-		init_dongles.c \
-		init_coders.c \
-		coder_routine.c \
-		utils.c \
-		coder_actions.c \
-		monitor.c \
-		heap.c 
+	parse_args.c \
+	init.c \
+	threads_manager.c \
+	simulation_state.c \
+	coder_states.c \
+	dongle_manager.c \
+	heap_manager.c \
+	scheduler.c \
+	routine.c \
+	monitor.c \
+	coder_stats.c \
+	time_io.c
 
 OBJ = $(SRC:%.c=%.o)
 
@@ -32,6 +34,6 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
-re: fclean alld
+re: fclean all
 
 .PHONY: clean fclean re all
