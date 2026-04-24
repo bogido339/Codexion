@@ -6,11 +6,28 @@
 /*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/27 09:31:50 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/19 18:47:20 by mohamed          ###   ########.fr       */
+/*   Updated: 2026/04/21 07:03:12 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+
+void free_resources(t_config *config)
+{
+    int i;
+
+    if (!config)
+        return ;
+    i = 0;
+    while (i < config->number_of_coders)
+    {
+        free(config->dongles[i].heap);
+        i++;
+    }
+    free(config->dongles);
+    free(config->coders);
+    free(config);
+}
 
 int main(int argc, char **argv)
 {
@@ -31,6 +48,6 @@ int main(int argc, char **argv)
     if (!coders)
         return (1);
     start_threads(config);
-
+    free_resources(config);
     return (0);
 }

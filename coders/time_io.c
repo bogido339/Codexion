@@ -6,7 +6,7 @@
 /*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 13:24:13 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/20 08:00:58 by mohamed          ###   ########.fr       */
+/*   Updated: 2026/04/24 14:47:10 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,12 @@ void print_status(t_coder *coder, char *msg, int count)
     int coder_id;
     int i;
 
-    if (simulation_stopped(coder->config))
-        return;
-
     pthread_mutex_lock(&coder->config->print_mutex);
+    if (simulation_stopped(coder->config))
+    {
+        pthread_mutex_unlock(&coder->config->print_mutex);
+        return;
+    }
     time_use = get_time_ms() - coder->config->start_time;
     coder_id = coder->id;
     

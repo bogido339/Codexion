@@ -6,7 +6,7 @@
 /*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 16:51:50 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/20 08:13:31 by mohamed          ###   ########.fr       */
+/*   Updated: 2026/04/24 10:08:51 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,11 @@ int take_dongles(t_coder *coder)
     
     while (1)
     {
-        if (are_dongles_ready(coder) && has_scheduler_turn(coder))
-            return (lock_dongles(coder), print_status(coder, "has taken a dongle", 2), 1);
         if (simulation_stopped(coder->config))
             return (0);
+        if (are_dongles_ready(coder) && has_scheduler_turn(coder))
+            return (lock_dongles(coder), print_status(coder, "has taken a dongle", 2), 1);
+        
         usleep(100);
     }
     return (1);

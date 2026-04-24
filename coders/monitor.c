@@ -6,7 +6,7 @@
 /*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 07:49:01 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/20 07:54:50 by mohamed          ###   ########.fr       */
+/*   Updated: 2026/04/24 14:44:43 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,21 @@
 
 int check_coders(t_config *config)
 {
-    int num_of_coders;
     int i;
     int finished_coders;
+    int time_use;
 
-    num_of_coders = config->number_of_coders;
     i = 0;
     finished_coders = 0;
-    while (i < num_of_coders)
+    while (i < config->number_of_coders)
     {
         if (get_compile_count(&config->coders[i]) < config->number_of_compiles_required)
         {
             if (get_compile_time(&config->coders[i]) > config->time_to_burnout)
             {
-                print_status(&config->coders[i], "burned out", 1);
                 stop_simulation(config);
+                time_use = get_time_ms() - config->start_time;
+                printf("%d %d %s\n", time_use, config->coders[i].id, "burned out");
                 return (0);
             }
         }
@@ -36,7 +36,7 @@ int check_coders(t_config *config)
             finished_coders++;
         i++;
     }
-    if (finished_coders == num_of_coders)
+    if (finished_coders == config->number_of_coders)
         return (stop_simulation(config), 0);
     return (1);
 }

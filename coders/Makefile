@@ -1,7 +1,8 @@
 NAME = codexion
-CC = cc
+CC = clang
 
-CFLAGS = -g -Wall -Wextra -Werror -lpthread
+CFLAGS = -Wall -Wextra -Werror -pthread -fsanitize=thread
+
 # -pthread -fsanitize=thread
 
 SRC = main.c \
@@ -23,7 +24,7 @@ OBJ = $(SRC:%.c=%.o)
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(OBJ) -o $(NAME)
+	$(CC) $(OBJ) $(CFLAGS) -o $(NAME)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
