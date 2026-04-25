@@ -17,8 +17,7 @@ SRC = main.c \
 	routine.c \
 	monitor.c \
 	coder_stats.c \
-	time_io.c \
-	heap_utlse.c
+	time_io.c
 
 OBJ = $(SRC:%.c=%.o)
 

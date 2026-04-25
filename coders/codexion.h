@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   codexion.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/28 14:58:58 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/24 17:51:38 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/19 18:44:50 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ void release_dongles(t_coder *coder);
 void add_coder_to_heap(t_coder *coder);
 void enqueue_first_time(t_coder *coder);
 void dequeue_from_heap(t_coder *coder);
-void swap_coders(t_dongle *dongle);
+void swap_coders(t_coder **heap);
 void sort_dongle_heap(t_dongle *dongle);
 
 //scheduler.c
@@ -146,10 +146,6 @@ void update_compile_time(t_coder *coder);
 long long get_time_ms(void);
 void smart_sleep(long time, t_coder *coder);
 void print_status(t_coder *coder, char *msg, int count);
-
-//heap_utlse.c
-t_coder *get_heap(t_dongle *dongle, int adr);
-void set_heap(t_dongle *dongle, t_coder *coder, int adr);
 
 
 #endif
