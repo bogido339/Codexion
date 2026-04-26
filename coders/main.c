@@ -12,42 +12,39 @@
 
 #include "codexion.h"
 
-void free_resources(t_config *config)
+void	free_resources(t_config *config)
 {
-    int i;
+	int	i;
 
-    if (!config)
-        return ;
-    i = 0;
-    while (i < config->number_of_coders)
-    {
-        free(config->dongles[i].heap);
-        i++;
-    }
-    free(config->dongles);
-    free(config->coders);
-    free(config);
+	if (!config)
+		return ;
+	i = 0;
+	while (i < config->number_of_coders)
+	{
+		free(config->dongles[i].heap);
+		i++;
+	}
+	free(config->dongles);
+	free(config->coders);
+	free(config);
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-    t_config *config;
-    t_dongle *dongles;
-    t_coder *coders;
+	t_config	*config;
+	t_dongle	*dongles;
+	t_coder		*coders;
 
-    if (!parse_args(argc, argv))
-        return (1);
-
-    config = init_config(argv);
-
-    dongles = init_dongles(config);
-    if (!dongles)
-        return (1);
-
-    coders = init_coders(config);
-    if (!coders)
-        return (1);
-    start_threads(config);
-    free_resources(config);
-    return (0);
+	if (!parse_args(argc, argv))
+		return (1);
+	config = init_config(argv);
+	dongles = init_dongles(config);
+	if (!dongles)
+		return (1);
+	coders = init_coders(config);
+	if (!coders)
+		return (1);
+	start_threads(config);
+	free_resources(config);
+	return (0);
 }
