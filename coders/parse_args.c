@@ -12,84 +12,90 @@
 
 #include "codexion.h"
 
-int	is_digit(int c)
+int	is_number(const char *str)
 {
-	if (c >= '0' && c <= '9')
-	{
-		return (1);
-	}
-	return (0);
-}
+	int	i = 0;
 
-int	is_number(char *nbr)
-{
-	int	i;
-
-	if (!nbr || !nbr[0])
+	if (!str || !str[0])
 		return (0);
-	i = 0;
-	while (nbr[i])
+
+	if (str[i] == '+')
+		i++;
+
+	if (!str[i])
+		return (0);
+
+	while (str[i])
 	{
-		if (!is_digit((unsigned char) nbr[i]))
+		if (!(str[i] >= '0' && str[i] <= '9'))
 			return (0);
 		i++;
 	}
 	return (1);
 }
 
-int	int_max(char *nbr)
+int	safe_atoi(const char *str, int *out)
 {
-	int		i = 0;
 	long	result = 0;
+	int		i = 0;
 
-	if (!nbr || !nbr[0])
+	if (!is_number(str))
 		return (0);
-	while (nbr[i])
+
+	if (str[i] == '+')
+		i++;
+
+	while (str[i])
 	{
-		if (!is_digit((unsigned char) nbr[i]))
-			return (0);
-		result = result * 10 + (nbr[i] - '0');
-		if (result > 2147483647 || result < 1)
+		result = result * 10 + (str[i] - '0');
+		if (result > INT_MAX)
 			return (0);
 		i++;
 	}
+	*out = (int)result;
 	return (1);
 }
 
 int	validate_numbers(char **argv)
 {
 	int	i;
+	int	value;
 
 	i = 1;
 	while (i < 8)
 	{
-		if (!is_number(argv[i]))
+		if (!safe_atoi(argv[i], &value))
 			return (0);
-		if (!int_max(argv[i]))
+
+		if (i != 7 && value <= 0)
 			return (0);
+
 		i++;
 	}
 	return (1);
 }
 
-int	validate_scheduler(char *scheduler)
+int	validate_scheduler(const char *scheduler)
 {
-	if (!strcmp(scheduler, "fifo"))
-		return (1);
-	if (!strcmp(scheduler, "edf"))
-		return (1);
-	return (0);
+	return (!strcmp(scheduler, "fifo") || !strcmp(scheduler, "edf"));
 }
 
 int	parse_args(int argc, char **argv)
 {
 	if (argc != 9)
-		return (fprintf(stderr, "number of args in not correct\n"), 0);
+	{
+		fprintf(stderr, "Error: wrong number of arguments\n");
+		return (0);
+	}
 	if (!validate_numbers(argv))
-		return (fprintf(stderr, "validate number function\n"), 0);
-	if (atoi(argv[1]) <= 0)
-		return (fprintf(stderr, "number of coder can not nigativ\n"), 0);
+	{
+		fprintf(stderr, "Error: invalid numeric arguments\n");
+		return (0);
+	}
 	if (!validate_scheduler(argv[8]))
-		return (fprintf(stderr, "validate scheduler function\n"), 0);
+	{
+		fprintf(stderr, "Error: invalid scheduler (use 'fifo' or 'edf')\n");
+		return (0);
+	}
 	return (1);
 }

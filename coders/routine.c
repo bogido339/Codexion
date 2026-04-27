@@ -14,18 +14,7 @@
 
 int	take_dongles(t_coder *coder)
 {
-	if (coder->first_push)
-	{
-		pthread_mutex_lock(&coder->config->heap_push_mutex);
-		enqueue_first_time(coder);
-		pthread_mutex_unlock(&coder->config->heap_push_mutex);
-	}
-	else
-	{
-		pthread_mutex_lock(&coder->config->heap_push_mutex);
-		add_coder_to_heap(coder);
-		pthread_mutex_unlock(&coder->config->heap_push_mutex);
-	}
+	add_coder_to_heap(coder);
 	while (1)
 	{
 		if (simulation_stopped(coder->config))
@@ -49,10 +38,13 @@ void	*coder_routine(void *arg)
 	t_coder	*coder;
 
 	coder = (t_coder *) arg;
+
 	if (coder->config->number_of_coders == 1)
 		return (handle_single_coder(coder), NULL);
+
 	while (!get_all_ready(coder->config))
         usleep(100);
+
 	while (1)
 	{
 		if (simulation_stopped(coder->config))

@@ -18,6 +18,7 @@
 # include <stdlib.h>
 # include <string.h>
 # include <sys/time.h>
+#include <limits.h>
 
 # include <pthread.h>
 
@@ -86,9 +87,9 @@ typedef struct s_coder
 int	main(int argc, char **argv);
 
 //parse_args.c
-int	is_number(char *nbr);
+int	is_number(const char *str);
 int	validate_numbers(char **argv);
-int	validate_scheduler(char *scheduler);
+int	validate_scheduler(const char *scheduler);
 int	parse_args(int argc, char **argv);
 
 //init.c

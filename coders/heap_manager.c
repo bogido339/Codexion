@@ -14,18 +14,23 @@
 
 void	add_coder_to_heap(t_coder *coder)
 {
-	pthread_mutex_lock(&coder->left_dongle->heap_mutex);
-	if (!coder->left_dongle->heap[0])
-		coder->left_dongle->heap[0] = coder;
-	else
-		coder->left_dongle->heap[1] = coder;
-	pthread_mutex_unlock(&coder->left_dongle->heap_mutex);
-	pthread_mutex_lock(&coder->right_dongle->heap_mutex);
-	if (!coder->right_dongle->heap[0])
-		coder->right_dongle->heap[0] = coder;
-	else
-		coder->right_dongle->heap[1] = coder;
-	pthread_mutex_unlock(&coder->right_dongle->heap_mutex);
+	if (coder->first_push)
+		enqueue_first_time(coder);
+	else if (coder->id % 2 == 0 || !coder->first_push)
+	{
+		pthread_mutex_lock(&coder->left_dongle->heap_mutex);
+		if (!coder->left_dongle->heap[0])
+			coder->left_dongle->heap[0] = coder;
+		else
+			coder->left_dongle->heap[1] = coder;
+		pthread_mutex_unlock(&coder->left_dongle->heap_mutex);
+		pthread_mutex_lock(&coder->right_dongle->heap_mutex);
+		if (!coder->right_dongle->heap[0])
+			coder->right_dongle->heap[0] = coder;
+		else
+			coder->right_dongle->heap[1] = coder;
+		pthread_mutex_unlock(&coder->right_dongle->heap_mutex);
+	}
 }
 
 void	enqueue_first_time(t_coder *coder)
@@ -58,14 +63,22 @@ void	enqueue_first_time(t_coder *coder)
 
 void	dequeue_from_heap(t_coder *coder)
 {
-	pthread_mutex_lock(&coder->left_dongle->heap_mutex);
-	coder->left_dongle->heap[0] = coder->left_dongle->heap[1];
-	coder->left_dongle->heap[1] = NULL;
-	pthread_mutex_unlock(&coder->left_dongle->heap_mutex);
-	pthread_mutex_lock(&coder->right_dongle->heap_mutex);
-	coder->right_dongle->heap[0] = coder->right_dongle->heap[1];
-	coder->right_dongle->heap[1] = NULL;
-	pthread_mutex_unlock(&coder->right_dongle->heap_mutex);
+
+    pthread_mutex_lock(&coder->left_dongle->heap_mutex);
+    if (coder->left_dongle->heap[0] == coder)
+    {
+        coder->left_dongle->heap[0] = coder->left_dongle->heap[1];
+        coder->left_dongle->heap[1] = NULL;
+    }
+    pthread_mutex_unlock(&coder->left_dongle->heap_mutex);
+
+    pthread_mutex_lock(&coder->right_dongle->heap_mutex);
+    if (coder->right_dongle->heap[0] == coder)
+    {
+        coder->right_dongle->heap[0] = coder->right_dongle->heap[1];
+        coder->right_dongle->heap[1] = NULL;
+    }
+    pthread_mutex_unlock(&coder->right_dongle->heap_mutex);
 }
 
 void	swap_coders(t_coder **heap)
