@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dongle_manager.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/19 17:52:37 by username          #+#    #+#             */
-/*   Updated: 2026/04/26 11:00:43 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/28 11:43:30 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,13 @@ int	are_dongles_ready(t_coder *coder)
 	ready = 1;
 	pthread_mutex_lock(&coder->left_dongle->availability_mutex);
 	ready *= coder->left_dongle->is_available;
-	ready *= (get_time_ms() - coder->left_dongle->last_released) > coder->config->dongle_cooldown;
+	ready *= (get_time_ms() - coder->left_dongle->last_released)
+		> coder->config->dongle_cooldown;
 	pthread_mutex_unlock(&coder->left_dongle->availability_mutex);
 	pthread_mutex_lock(&coder->right_dongle->availability_mutex);
 	ready *= coder->right_dongle->is_available;
-	ready *= (get_time_ms() - coder->right_dongle->last_released) > coder->config->dongle_cooldown;
+	ready *= (get_time_ms() - coder->right_dongle->last_released)
+		> coder->config->dongle_cooldown;
 	pthread_mutex_unlock(&coder->right_dongle->availability_mutex);
 	return (ready);
 }

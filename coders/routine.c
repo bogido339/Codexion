@@ -1,28 +1,55 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                       :::      ::::::::    */
-/*   routine.c                                         :+:      :+:    :+:    */
-/*                                                   +:+ +:+         +:+      */
-/*   By: username <username@student.42tokyo.jp>    #+#  +:+       +#+         */
-/*                                               +#+#+#+#+#+   +#+            */
-/*   Created: 2026/03/30 16:51:50 by username         #+#    #+#              */
-/*   Updated: 2026/04/26 16:49:06 by username        ###   ########.fr        */
+/*                                                        :::      ::::::::   */
+/*   routine.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/30 16:51:50 by username          #+#    #+#             */
+/*   Updated: 2026/04/28 11:28:44 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
+void	add_coder_to_heap(t_coder *coder)
+{
+	pthread_mutex_lock(&coder->left_dongle->heap_mutex);
+	if (!coder->left_dongle->heap[0])
+		coder->left_dongle->heap[0] = coder;
+	else
+		coder->left_dongle->heap[1] = coder;
+	pthread_mutex_unlock(&coder->left_dongle->heap_mutex);
+	pthread_mutex_lock(&coder->right_dongle->heap_mutex);
+	if (!coder->right_dongle->heap[0])
+		coder->right_dongle->heap[0] = coder;
+	else
+		coder->right_dongle->heap[1] = coder;
+	pthread_mutex_unlock(&coder->right_dongle->heap_mutex);
+}
+
 int	take_dongles(t_coder *coder)
 {
-	add_coder_to_heap(coder);
+	if (coder->first_push)
+	{
+		pthread_mutex_lock(&coder->config->heap_push_mutex);
+		enqueue_first_time(coder);
+		pthread_mutex_unlock(&coder->config->heap_push_mutex);
+	}
+	else
+	{
+		pthread_mutex_lock(&coder->config->heap_push_mutex);
+		add_coder_to_heap(coder);
+		pthread_mutex_unlock(&coder->config->heap_push_mutex);
+	}
 	while (1)
 	{
 		if (simulation_stopped(coder->config))
 			return (0);
-		int a = has_scheduler_turn(coder);
-		if (are_dongles_ready(coder) && a)
-			return (lock_dongles(coder), print_status(coder, "has taken a dongle", 2), 1);
-		usleep(1000);
+		if (are_dongles_ready(coder) && has_scheduler_turn(coder))
+			return (lock_dongles(coder), print_status(coder,
+					"has taken a dongle", 2), 1);
+		usleep(100);
 	}
 	return (1);
 }
@@ -37,14 +64,9 @@ void	*coder_routine(void *arg)
 {
 	t_coder	*coder;
 
-	coder = (t_coder *) arg;
-
+	coder = (t_coder *)arg;
 	if (coder->config->number_of_coders == 1)
 		return (handle_single_coder(coder), NULL);
-
-	while (!get_all_ready(coder->config))
-        usleep(100);
-
 	while (1)
 	{
 		if (simulation_stopped(coder->config))
@@ -55,7 +77,8 @@ void	*coder_routine(void *arg)
 		release_dongles(coder);
 		debug(coder);
 		refactor(coder);
-		if (get_compile_count(coder) >= coder->config->number_of_compiles_required)
+		if (get_compile_count(coder)
+			>= coder->config->number_of_compiles_required)
 			break ;
 	}
 	return (NULL);

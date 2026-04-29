@@ -14,7 +14,8 @@
 
 int	schedule_fifo(t_coder *coder)
 {
-	if (coder != coder->left_dongle->heap[0] || coder != coder->right_dongle->heap[0])
+	if (coder != coder->left_dongle->heap[0]
+		|| coder != coder->right_dongle->heap[0])
 		return (0);
 	else
 		return (1);
@@ -26,7 +27,8 @@ int	schedule_edf(t_coder *coder)
 		sort_dongle_heap(coder->left_dongle);
 	if (coder->right_dongle->heap[1] == coder)
 		sort_dongle_heap(coder->right_dongle);
-	if (coder == coder->left_dongle->heap[0] && coder == coder->right_dongle->heap[0])
+	if (coder == coder->left_dongle->heap[0]
+		&& coder == coder->right_dongle->heap[0])
 		return (1);
 	return (0);
 }

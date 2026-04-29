@@ -6,7 +6,7 @@
 /*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/27 09:31:50 by mbougajd          #+#    #+#             */
-/*   Updated: 2026/04/21 07:03:12 by mohamed          ###   ########.fr       */
+/*   Updated: 2026/04/28 18:01:11 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ int	main(int argc, char **argv)
 	if (!parse_args(argc, argv))
 		return (1);
 	config = init_config(argv);
+	if (!config)
+		return (1);
 	dongles = init_dongles(config);
 	if (!dongles)
 		return (1);

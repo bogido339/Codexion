@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbougajd <mbougajd@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 14:50:25 by username          #+#    #+#             */
-/*   Updated: 2026/04/26 11:00:31 by mbougajd         ###   ########.fr       */
+/*   Updated: 2026/04/28 17:57:02 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ t_config	*init_config(char **argv)
 	t_config	*config;
 
 	config = malloc(sizeof(t_config));
+	if (!config)
+		return (NULL);
 	config->number_of_coders = atoi(argv[1]);
 	config->time_to_burnout = atoi(argv[2]);
 	config->time_to_compile = atoi(argv[3]);
@@ -26,30 +28,56 @@ t_config	*init_config(char **argv)
 	config->dongle_cooldown = atoi(argv[7]);
 	config->scheduler = argv[8];
 	config->stop_simulation = 0;
-	config->all_ready = 0;
 	config->start_time = get_time_ms();
 	pthread_mutex_init(&config->stop_simulation_mutex, NULL);
 	pthread_mutex_init(&config->print_mutex, NULL);
 	pthread_mutex_init(&config->heap_push_mutex, NULL);
-	pthread_mutex_init(&config->all_ready_mutex, NULL);
 	return (config);
+}
+
+void	cleanup_dongles(t_dongle *dongles, int count)
+{
+	while (--count >= 0)
+	{
+		free(dongles[count].heap);
+		pthread_mutex_destroy(&dongles[count].availability_mutex);
+		pthread_mutex_destroy(&dongles[count].heap_mutex);
+	}
+	free(dongles);
+}
+
+int	init_one_dongle(t_dongle *d)
+{
+	d->is_available = 1;
+	d->last_released = 0;
+	pthread_mutex_init(&d->availability_mutex, NULL);
+	pthread_mutex_init(&d->heap_mutex, NULL);
+	d->heap = malloc(sizeof(t_coder *) * 2);
+	if (!d->heap)
+		return (0);
+	d->heap[0] = NULL;
+	d->heap[1] = NULL;
+	return (1);
 }
 
 t_dongle	*init_dongles(t_config *config)
 {
-	int			num_dongles = config->number_of_coders;
-	int			i = 0;
-	t_dongle	*dongles = malloc(sizeof(t_dongle) *num_dongles);
+	int			i;
+	int			total;
+	t_dongle	*dongles;
 
-	while (i < num_dongles)
+	total = config->number_of_coders;
+	dongles = malloc(sizeof(t_dongle) * total);
+	if (!dongles)
+		return (NULL);
+	i = 0;
+	while (i < total)
 	{
-		dongles[i].is_available = 1;
-		dongles[i].last_released = 0;
-		pthread_mutex_init(&dongles[i].availability_mutex, NULL);
-		pthread_mutex_init(&dongles[i].heap_mutex, NULL);
-		dongles[i].heap = malloc(sizeof(t_coder *) * 2);
-		dongles[i].heap[0] = NULL;
-		dongles[i].heap[1] = NULL;
+		if (!init_one_dongle(&dongles[i]))
+		{
+			cleanup_dongles(dongles, i);
+			return (NULL);
+		}
 		i++;
 	}
 	config->dongles = dongles;
@@ -58,10 +86,13 @@ t_dongle	*init_dongles(t_config *config)
 
 t_coder	*init_coders(t_config *config)
 {
-	int		num_coders = config->number_of_coders;
-	int		i = 0;
-	t_coder	*coders = malloc(sizeof(t_coder) *num_coders);
+	int		num_coders;
+	int		i;
+	t_coder	*coders;
 
+	num_coders = config->number_of_coders;
+	i = 0;
+	coders = malloc(sizeof(t_coder) * num_coders);
 	if (!coders)
 		return (NULL);
 	while (i < num_coders)

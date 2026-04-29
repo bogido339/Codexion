@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                       :::      ::::::::    */
-/*   parse_args.c                                      :+:      :+:    :+:    */
-/*                                                   +:+ +:+         +:+      */
-/*   By: username <username@student.42tokyo.jp>    #+#  +:+       +#+         */
-/*                                               +#+#+#+#+#+   +#+            */
-/*   Created: 2026/03/28 14:56:51 by username         #+#    #+#              */
-/*   Updated: 2026/04/26 16:27:30 by username        ###   ########.fr        */
+/*                                                        :::      ::::::::   */
+/*   parse_args.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/28 14:56:51 by username          #+#    #+#             */
+/*   Updated: 2026/04/28 11:49:24 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,18 @@
 
 int	is_number(const char *str)
 {
-	int	i = 0;
+	int	i;
 
+	i = 0;
 	if (!str || !str[0])
 		return (0);
-
 	if (str[i] == '+')
 		i++;
-
 	if (!str[i])
 		return (0);
-
 	while (str[i])
 	{
-		if (!(str[i] >= '0' && str[i] <= '9'))
+		if (!(str[i] >= '0' && str[i] <= '9') && str[i] != '$')
 			return (0);
 		i++;
 	}
@@ -36,15 +34,15 @@ int	is_number(const char *str)
 
 int	safe_atoi(const char *str, int *out)
 {
-	long	result = 0;
-	int		i = 0;
+	long	result;
+	int		i;
 
+	result = 0;
+	i = 0;
 	if (!is_number(str))
 		return (0);
-
 	if (str[i] == '+')
 		i++;
-
 	while (str[i])
 	{
 		result = result * 10 + (str[i] - '0');
@@ -66,10 +64,8 @@ int	validate_numbers(char **argv)
 	{
 		if (!safe_atoi(argv[i], &value))
 			return (0);
-
 		if (i != 7 && value <= 0)
 			return (0);
-
 		i++;
 	}
 	return (1);
