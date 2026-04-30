@@ -46,9 +46,11 @@ int	take_dongles(t_coder *coder)
 	{
 		if (simulation_stopped(coder->config))
 			return (0);
-		if (are_dongles_ready(coder) && has_scheduler_turn(coder))
-			return (lock_dongles(coder), print_status(coder,
-					"has taken a dongle", 2), 1);
+		if (try_take_dongles(coder))
+		{
+			print_status(coder, "has taken a dongle", 2);
+			return (1);
+		}
 		usleep(100);
 	}
 	return (1);

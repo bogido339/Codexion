@@ -104,6 +104,7 @@ t_coder	*init_coders(t_config *config)
 		coders[i].right_dongle = &config->dongles[(i + 1) % num_coders];
 		coders[i].config = config;
 		coders[i].first_push = 1;
+		pthread_mutex_init(&coders[i].compile_mutex, NULL);
 		i++;
 	}
 	config->coders = coders;

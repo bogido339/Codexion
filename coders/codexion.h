@@ -105,10 +105,10 @@ void						stop_simulation(t_config *config);
 void						compile(t_coder *coder);
 void						debug(t_coder *coder);
 void						refactor(t_coder *coder);
+long long					get_safe_last_compile_time(t_coder *coder);
 
 //dongle_manager.c
-int							are_dongles_ready(t_coder *coder);
-void						lock_dongles(t_coder *coder);
+int							try_take_dongles(t_coder *coder);
 void						release_dongles(t_coder *coder);
 
 //heap_manager.c

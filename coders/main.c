@@ -21,9 +21,15 @@ void	free_resources(t_config *config)
 	i = 0;
 	while (i < config->number_of_coders)
 	{
+		pthread_mutex_destroy(&config->dongles[i].availability_mutex);
+		pthread_mutex_destroy(&config->dongles[i].heap_mutex);
 		free(config->dongles[i].heap);
+		pthread_mutex_destroy(&config->coders[i].compile_mutex);
 		i++;
 	}
+	pthread_mutex_destroy(&config->print_mutex);
+	pthread_mutex_destroy(&config->stop_simulation_mutex);
+	pthread_mutex_destroy(&config->heap_push_mutex);
 	free(config->dongles);
 	free(config->coders);
 	free(config);

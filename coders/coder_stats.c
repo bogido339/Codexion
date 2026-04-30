@@ -45,3 +45,13 @@ void	update_compile_time(t_coder *coder)
 	coder->last_compile_time = get_time_ms();
 	pthread_mutex_unlock(&coder->compile_mutex);
 }
+
+long long	get_safe_last_compile_time(t_coder *coder)
+{
+	long long	time;
+
+	pthread_mutex_lock(&coder->compile_mutex);
+	time = coder->last_compile_time;
+	pthread_mutex_unlock(&coder->compile_mutex);
+	return (time);
+}

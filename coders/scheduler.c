@@ -27,10 +27,8 @@ int	schedule_edf(t_coder *coder)
 		sort_dongle_heap(coder->left_dongle);
 	if (coder->right_dongle->heap[1] == coder)
 		sort_dongle_heap(coder->right_dongle);
-	if (coder == coder->left_dongle->heap[0]
-		&& coder == coder->right_dongle->heap[0])
-		return (1);
-	return (0);
+	return (coder == coder->left_dongle->heap[0]
+		&& coder == coder->right_dongle->heap[0]);
 }
 
 int	has_scheduler_turn(t_coder *coder)
@@ -38,14 +36,14 @@ int	has_scheduler_turn(t_coder *coder)
 	int	result;
 
 	result = 0;
-	if (strcmp(coder->config->scheduler, "edf") == 0)
+	if (!strcmp(coder->config->scheduler, "edf"))
 	{
 		lock_dongles_safe(coder);
 		result = schedule_edf(coder);
 		unlock_dongles_safe(coder);
 		return (result);
 	}
-	if (strcmp(coder->config->scheduler, "fifo") == 0)
+	if (!strcmp(coder->config->scheduler, "fifo"))
 	{
 		lock_dongles_safe(coder);
 		result = schedule_fifo(coder);

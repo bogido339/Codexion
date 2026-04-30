@@ -40,12 +40,26 @@ void	enqueue_first_time(t_coder *coder)
 void	dequeue_from_heap(t_coder *coder)
 {
 	pthread_mutex_lock(&coder->left_dongle->heap_mutex);
-	coder->left_dongle->heap[0] = coder->left_dongle->heap[1];
-	coder->left_dongle->heap[1] = NULL;
+	if (coder->left_dongle->heap[0] == coder)
+	{
+		coder->left_dongle->heap[0] = coder->left_dongle->heap[1];
+		coder->left_dongle->heap[1] = NULL;
+	}
+	else if (coder->left_dongle->heap[1] == coder)
+	{
+		coder->left_dongle->heap[1] = NULL;
+	}
 	pthread_mutex_unlock(&coder->left_dongle->heap_mutex);
 	pthread_mutex_lock(&coder->right_dongle->heap_mutex);
-	coder->right_dongle->heap[0] = coder->right_dongle->heap[1];
-	coder->right_dongle->heap[1] = NULL;
+	if (coder->right_dongle->heap[0] == coder)
+	{
+		coder->right_dongle->heap[0] = coder->right_dongle->heap[1];
+		coder->right_dongle->heap[1] = NULL;
+	}
+	else if (coder->right_dongle->heap[1] == coder)
+	{
+		coder->right_dongle->heap[1] = NULL;
+	}
 	pthread_mutex_unlock(&coder->right_dongle->heap_mutex);
 }
 
@@ -60,16 +74,14 @@ void	swap_coders(t_coder **heap)
 
 void	sort_dongle_heap(t_dongle *dongle)
 {
-	t_coder	*c0;
-	t_coder	*c1;
+	long long	time_0;
+	long long	time_1;
 
 	if (!dongle->heap[0] || !dongle->heap[1])
 		return ;
-	c0 = dongle->heap[0];
-	c1 = dongle->heap[1];
-	if (get_compile_time(c0) > get_compile_time(c1))
-		swap_coders(dongle->heap);
-	else if (get_compile_time(c0) == get_compile_time(c1)
-		&& get_compile_count(c0) < get_compile_count(c1))
+	time_0 = get_safe_last_compile_time(dongle->heap[0]);
+	time_1 = get_safe_last_compile_time(dongle->heap[1]);
+	if (time_0 > time_1 || (time_0 == time_1
+			&& dongle->heap[0]->id < dongle->heap[1]->id))
 		swap_coders(dongle->heap);
 }

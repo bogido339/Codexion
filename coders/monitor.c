@@ -26,8 +26,10 @@ int	check_coders(t_config *config)
 		{
 			if (get_compile_time(&config->coders[i]) > config->time_to_burnout)
 				return (stop_simulation(config),
+					pthread_mutex_lock(&config->print_mutex),
 					printf("%lld %d %s\n", get_time_ms() - config->start_time,
-						config->coders[i].id, "burned out"), 0);
+						config->coders[i].id, "burned out"),
+					pthread_mutex_unlock(&config->print_mutex), 0);
 		}
 		else
 			finished_coders++;
