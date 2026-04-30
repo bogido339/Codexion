@@ -12,22 +12,39 @@
 
 #include "codexion.h"
 
+void	sync_start_time(t_config *config)
+{
+	int	i;
+
+	pthread_mutex_lock(&config->ready_mutex);
+	config->start_time = get_time_ms();
+	i = 0;
+	while (i < config->number_of_coders)
+	{
+		pthread_mutex_lock(&config->coders[i].compile_mutex);
+		config->coders[i].last_compile_time = config->start_time;
+		pthread_mutex_unlock(&config->coders[i].compile_mutex);
+		i++;
+	}
+	config->ready = 1;
+	pthread_mutex_unlock(&config->ready_mutex);
+}
+
 void	start_threads(t_config *config)
 {
 	int	i;
-	int	n;
 
-	n = config->number_of_coders;
 	i = 0;
-	while (i < n)
+	while (i < config->number_of_coders)
 	{
 		pthread_create(&config->coders[i].coder_thread_id, NULL,
 			coder_routine, &config->coders[i]);
 		i++;
 	}
 	pthread_create(&config->monitor_id, NULL, monitor_routine, config);
+	sync_start_time(config);
 	i = 0;
-	while (i < n)
+	while (i < config->number_of_coders)
 	{
 		pthread_join(config->coders[i].coder_thread_id, NULL);
 		i++;

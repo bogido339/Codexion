@@ -28,3 +28,18 @@ void	stop_simulation(t_config *config)
 	config->stop_simulation = 1;
 	pthread_mutex_unlock(&config->stop_simulation_mutex);
 }
+
+void	wait_all_threads_ready(t_config *config)
+{
+	while (1)
+	{
+		pthread_mutex_lock(&config->ready_mutex);
+		if (config->ready == 1)
+		{
+			pthread_mutex_unlock(&config->ready_mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&config->ready_mutex);
+		usleep(50);
+	}
+}

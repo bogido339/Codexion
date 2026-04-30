@@ -39,10 +39,12 @@ typedef struct s_config
 
 	int						stop_simulation;
 	long long				start_time;
+	int						ready;
 
 	pthread_mutex_t			stop_simulation_mutex;
 	pthread_mutex_t			print_mutex;
 	pthread_mutex_t			heap_push_mutex;
+	pthread_mutex_t			ready_mutex;
 
 	pthread_t				monitor_id;
 
@@ -72,7 +74,6 @@ typedef struct s_coder
 	int						id;
 	long long				last_compile_time;
 	int						compile_count;
-	int						first_push;
 
 	t_dongle				*left_dongle;
 	t_dongle				*right_dongle;
@@ -146,5 +147,7 @@ void						print_status(t_coder *coder, char *msg, int count);
 
 void						lock_dongles_safe(t_coder *coder);
 void						unlock_dongles_safe(t_coder *coder);
+
+void						wait_all_threads_ready(t_config *config);
 
 #endif

@@ -32,8 +32,6 @@ void	enqueue_first_time(t_coder *coder)
 		assign_heap(coder, 1, 0);
 	else
 		assign_heap(coder, 0, 1);
-	if (coder->first_push)
-		coder->first_push = 0;
 	unlock_dongles_safe(coder);
 }
 

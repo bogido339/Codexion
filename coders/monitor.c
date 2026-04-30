@@ -45,6 +45,7 @@ void	*monitor_routine(void *arg)
 	t_config	*config;
 
 	config = (t_config *)arg;
+	wait_all_threads_ready(config);
 	while (check_coders(config))
 		usleep(500);
 	return (NULL);

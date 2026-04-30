@@ -28,10 +28,12 @@ t_config	*init_config(char **argv)
 	config->dongle_cooldown = atoi(argv[7]);
 	config->scheduler = argv[8];
 	config->stop_simulation = 0;
+	config->ready = 0;
 	config->start_time = get_time_ms();
 	pthread_mutex_init(&config->stop_simulation_mutex, NULL);
 	pthread_mutex_init(&config->print_mutex, NULL);
 	pthread_mutex_init(&config->heap_push_mutex, NULL);
+	pthread_mutex_init(&config->ready_mutex, NULL);
 	return (config);
 }
 
@@ -103,7 +105,6 @@ t_coder	*init_coders(t_config *config)
 		coders[i].left_dongle = &config->dongles[i];
 		coders[i].right_dongle = &config->dongles[(i + 1) % num_coders];
 		coders[i].config = config;
-		coders[i].first_push = 1;
 		pthread_mutex_init(&coders[i].compile_mutex, NULL);
 		i++;
 	}

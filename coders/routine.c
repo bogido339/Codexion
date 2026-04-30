@@ -30,18 +30,6 @@ void	add_coder_to_heap(t_coder *coder)
 
 int	take_dongles(t_coder *coder)
 {
-	if (coder->first_push)
-	{
-		pthread_mutex_lock(&coder->config->heap_push_mutex);
-		enqueue_first_time(coder);
-		pthread_mutex_unlock(&coder->config->heap_push_mutex);
-	}
-	else
-	{
-		pthread_mutex_lock(&coder->config->heap_push_mutex);
-		add_coder_to_heap(coder);
-		pthread_mutex_unlock(&coder->config->heap_push_mutex);
-	}
 	while (1)
 	{
 		if (simulation_stopped(coder->config))
@@ -62,18 +50,11 @@ void	handle_single_coder(t_coder *coder)
 	smart_sleep(coder->config->time_to_compile, coder);
 }
 
-void	*coder_routine(void *arg)
+void	run_simulation_loop(t_coder *coder)
 {
-	t_coder	*coder;
-
-	coder = (t_coder *)arg;
-	if (coder->config->number_of_coders == 1)
-		return (handle_single_coder(coder), NULL);
 	while (1)
 	{
-		if (simulation_stopped(coder->config))
-			break ;
-		if (!take_dongles(coder))
+		if (simulation_stopped(coder->config) || !take_dongles(coder))
 			break ;
 		compile(coder);
 		release_dongles(coder);
@@ -82,6 +63,26 @@ void	*coder_routine(void *arg)
 		if (get_compile_count(coder)
 			>= coder->config->number_of_compiles_required)
 			break ;
+		pthread_mutex_lock(&coder->config->heap_push_mutex);
+		add_coder_to_heap(coder);
+		pthread_mutex_unlock(&coder->config->heap_push_mutex);
 	}
+}
+
+void	*coder_routine(void *arg)
+{
+	t_coder	*coder;
+
+	coder = (t_coder *)arg;
+	pthread_mutex_lock(&coder->config->heap_push_mutex);
+	enqueue_first_time(coder);
+	pthread_mutex_unlock(&coder->config->heap_push_mutex);
+	wait_all_threads_ready(coder->config);
+	if (coder->config->number_of_coders == 1)
+	{
+		handle_single_coder(coder);
+		return (NULL);
+	}
+	run_simulation_loop(coder);
 	return (NULL);
 }
