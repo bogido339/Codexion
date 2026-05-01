@@ -42,6 +42,7 @@ void	start_threads(t_config *config)
 		i++;
 	}
 	pthread_create(&config->monitor_id, NULL, monitor_routine, config);
+	usleep(100);
 	sync_start_time(config);
 	i = 0;
 	while (i < config->number_of_coders)

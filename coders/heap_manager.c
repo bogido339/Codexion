@@ -80,6 +80,7 @@ void	sort_dongle_heap(t_dongle *dongle)
 	time_0 = get_safe_last_compile_time(dongle->heap[0]);
 	time_1 = get_safe_last_compile_time(dongle->heap[1]);
 	if (time_0 > time_1 || (time_0 == time_1
-			&& dongle->heap[0]->id < dongle->heap[1]->id))
+			&& get_compile_count(dongle->heap[0])
+			> get_compile_count(dongle->heap[1])))
 		swap_coders(dongle->heap);
 }
